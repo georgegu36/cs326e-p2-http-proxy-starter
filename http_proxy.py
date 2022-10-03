@@ -103,7 +103,7 @@ def bar(server_ip, server_port, client_data, server_side_socket):
         if not http_response:
             break
     # logging
-    #print(">>>" + http_response.decode('utf-8'))
+    # print(">>>" + http_response.decode('utf-8'))
 
 
 # TODO: IMPLEMENT THIS METHOD 
