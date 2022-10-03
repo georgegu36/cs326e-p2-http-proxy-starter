@@ -85,14 +85,42 @@ def tunnel(from_socket, to_socket):
             to_socket.close()
             return
         
+def foo(client_socket, server_side_socket):
+    try:
+        server_side_socket.connect((server_ip, server_port))
+        print("OK 200")
+        tunnel(client_socket, server_side_socket)
+    except:
+        print("HTTP 502 Bad Gateway")
+        server_side_socket.close()
+
+def bar(server_ip, server_port, client_data, server_side_socket):
+    server_side_socket.connect((server_ip, server_port))
+    modified_client_data = modify_headers(client_data.decode('utf-8'))
+    server_side_socket.sendall(bytes(modified_client_data, encoding = 'utf-8'))
+    while True:
+        http_response = server_side_socket.recv(BUFFER_SIZE)
+        if not http_response:
+            break
+    # logging
+    #print(">>>" + http_response.decode('utf-8'))
+
 
 # TODO: IMPLEMENT THIS METHOD 
 def proxy(client_socket,client_IP):
     '''
-    Modify this comment and add your code here
+    setup the proxy for connection request and non-connect request from client to server
     '''
     global LOG_FLAG
-    pass
+    client_data = client_socket.recv(BUFFER_SIZE)
+    server_ip, server_port, hostname, is_connect = parse_server_info(client_data.decode('utf-8'))
+    server_side_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    if is_connect:
+        foo(client_socket, server_side_socket)
+    else:
+        bar(server_ip, server_port, client_data, server_side_socket)
+    
+
 
 
 def main():
